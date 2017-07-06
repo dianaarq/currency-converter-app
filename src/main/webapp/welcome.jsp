@@ -40,13 +40,29 @@
 
     <div>
         <c:if test="${not empty rates}">
+            <table>
+                <tr class="tabletitle">
 
-        <ul>
-            <c:forEach var="listValue" items="${rates}">
-                <li>${listValue}</li>
+                    <td>Id</td>
+                    <td>Currency</td>
+                    <td>Change</td>
+                    <td>Date</td>
+                    <td>Timestamp</td>
+
+                </tr>
+                <c:forEach var="listValue" items="${rates}">
+                    <tr>
+
+                        <td>${listValue.id}</td>
+                        <td>${listValue.currency}</td>
+                        <td>${listValue.exchange}</td>
+                        <td>${listValue.date}</td>
+                        <td>${listValue.timestamp}</td>
+
+                    </tr>
             </c:forEach>
-        </ul>
 
+            </table>
         </c:if>
     </div>
 

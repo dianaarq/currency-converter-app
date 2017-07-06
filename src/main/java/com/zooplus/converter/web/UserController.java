@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -46,16 +48,15 @@ public class UserController {
         return "registration";
     }
 
-    @RequestMapping(value = "/welcome", method = RequestMethod.POST)
-    public String getConversion(@ModelAttribute("currencyForm") Rate currencyForm) {
+    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.POST)
+    public String getConversion(@ModelAttribute("currencyForm") Rate currencyForm, Model model){
 
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        LOGGER.info("User name"+ name);
-        List<Rate> rates = new ArrayList<>();
-        rates = userService.findTop10byRate(name);
-        LOGGER.info("size"+rates.size());
-        if(rates.size()>0)
-            LOGGER.info(""+rates.get(0).getId());
+        LOGGER.info("getConversion");
+        List<Object[]> objects = new ArrayList<>();
+        objects = userService.findTop10byRate(name);
+
+        List<Rate> rates = getRates(objects);
         CurrencyConverter currencyConverter =
                 currencyService.getRateByCurrency(currencyForm.getCurrency());
         LOGGER.info("User name de quotes"+ currencyConverter.getQuotes().toString());
@@ -64,7 +65,7 @@ public class UserController {
         LOGGER.info("User name from the user"+user.getUsername());
 
         userService.saveRate(currencyConverter, user, currencyForm.getCurrency(), currencyForm.getDate());
-
+        model.addAttribute("rates", rates);
 
         return "welcome";
 
@@ -98,14 +99,50 @@ public class UserController {
 
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
     public String welcome(Model model) {
+        LOGGER.info("welcome");
+
         if(SecurityContextHolder.getContext().getAuthentication().getName() != null){
 
-            List<Rate> rates = new ArrayList<Rate>();
-            rates = userService.findTop10byRate(SecurityContextHolder.getContext().getAuthentication().getName());
-            
+            List<Object[]> objects = new ArrayList<>();
+            objects = userService.findTop10byRate(SecurityContextHolder.getContext().getAuthentication().getName());
+            List<Rate> rates = getRates(objects);
             model.addAttribute("rates", rates);
             model.addAttribute("currencyForm", new Rate());
         }
         return "welcome";
+    }
+
+    /*
+*  private Long id;
+    String currency;
+    String exchange;
+    Timestamp timestamp;
+    String date;
+    User user;*/
+    private List<Rate> getRates(List<Object[]> objects) {
+        List<Rate> rates = new ArrayList<>();
+        LOGGER.info("size"+objects.size());
+        if(objects.size()>0) {
+            for (Object[] item : objects) {
+                Rate rate = new Rate();
+
+                LOGGER.info(""+item[0]);
+                rate.setId(((BigInteger) item[0]).longValue());
+                LOGGER.info(""+item[1]);
+                rate.setCurrency((String) item[1]);
+                LOGGER.info(""+item[2]);
+                rate.setExchange((String) item[2]);
+
+                LOGGER.info(""+item[3]);
+                rate.setTimestamp((Timestamp) item[3]);
+
+                LOGGER.info(""+item[4]);
+                rate.setDate((String) item[4]);
+
+                rates.add(rate);
+            }
+
+        }
+        return rates;
     }
 }

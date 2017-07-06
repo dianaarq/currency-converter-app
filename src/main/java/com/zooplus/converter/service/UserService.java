@@ -12,5 +12,5 @@ public interface UserService {
     void save(User user);
     void saveRate(CurrencyConverter currencyConverter, User user, String currency, String date);
     User findByUsername(String username);
-    List<Rate> findTop10byRate(String username);
+    List<Object[]> findTop10byRate(String username);
 }

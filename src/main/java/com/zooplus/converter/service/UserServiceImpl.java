@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Rate> findTop10byRate(String username) {
+    public List<Object[]> findTop10byRate(String username) {
         return userRepository.findTop10byRate(username);
     }
 
