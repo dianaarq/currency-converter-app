@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                     .antMatchers("/resources/**", "/registration").permitAll()
@@ -35,11 +35,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .logout()
-                    .permitAll();
+                    .permitAll().and()
+                .exceptionHandling().accessDeniedPage("/error");
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 }

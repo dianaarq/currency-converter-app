@@ -73,10 +73,11 @@
 
 <form:form method="POST" modelAttribute="currencyForm" class="form-signin">
 
-       <h2 class="form-heading">Log in</h2>
+       <h2 class="form-heading">Select currency and date</h2>
 
     <spring:bind path="currency">
         <div class="form-group ${error != null ? 'has-error' : ''}">
+
             <span>${message}</span>
             <form:select type="currency" path="currency" class="form-control" placeholder="Currency">
                 <option value="EUR">Euro</option>

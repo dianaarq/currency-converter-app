@@ -4,18 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dianaarq on 04/07/2017.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrencyConverter implements Serializable{
-    String success;
-    String terms;
-    String privacy;
-    String timestamp;
-    String source;
-    Object quotes;
+    private String success;
+    private String terms;
+    private String privacy;
+    private String timestamp;
+    private String source;
+    private Map<String, Double> quotes;
 
     public String getSuccess() {
         return success;
@@ -57,11 +58,11 @@ public class CurrencyConverter implements Serializable{
         this.source = source;
     }
 
-    public Object getQuotes() {
+    public Map<String, Double> getQuotes() {
         return quotes;
     }
 
-    public void setQuotes(Object quotes) {
+    public void setQuotes(Map<String, Double> quotes) {
         this.quotes = quotes;
     }
 }

@@ -24,11 +24,11 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Override
     public CurrencyConverter getRateByCurrency(String currency) {
         Map<String, String> mapCurrency = new HashMap<>();
-        mapCurrency.put("currency",currency);
+        mapCurrency.put("currency", currency);
         restTemplate = new RestTemplate();
         CurrencyConverter rate = restTemplate.getForObject(serviceUrl
                 + "{currency}", CurrencyConverter.class, mapCurrency);
-        LOGGER.info("CurrencyRate "+rate);
+        LOGGER.info("CurrencyRate " + rate);
         return rate;
     }
 }

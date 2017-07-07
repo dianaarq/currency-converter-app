@@ -10,14 +10,14 @@ import java.sql.Timestamp;
 @Table(name = "rate")
 public class Rate {
     private Long id;
-    String currency;
-    String exchange;
-    Timestamp timestamp;
-    String date;
-    User user;
+    private String currency;
+    private String exchange;
+    private Timestamp timestamp;
+    private String date;
+    private User user;
 
-    public Rate(){}
-    public Rate(String currency, String exchange, Timestamp timestamp, String date, User user){
+    public Rate(){ }
+    public Rate(final String currency, final String exchange, final Timestamp timestamp, final String date, final User user){
         super();
         this.currency = currency;
         this.exchange = exchange;
