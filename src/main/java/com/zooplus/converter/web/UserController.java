@@ -3,7 +3,10 @@ package com.zooplus.converter.web;
 import com.zooplus.converter.model.FixerConverter;
 import com.zooplus.converter.model.Rate;
 import com.zooplus.converter.model.User;
-import com.zooplus.converter.service.*;
+import com.zooplus.converter.service.CurrencyService;
+import com.zooplus.converter.service.CurrencyServiceFixerImp;
+import com.zooplus.converter.service.SecurityService;
+import com.zooplus.converter.service.UserService;
 import com.zooplus.converter.validator.RateValidator;
 import com.zooplus.converter.validator.UserValidator;
 import org.slf4j.Logger;
@@ -25,38 +28,41 @@ import java.util.List;
  */
 @Controller
 public class UserController {
+    public static final String CURRENCY_FORM = "currencyForm";
+    public static final String USER_FORM = "userForm";
+    public static final String RATES = "rates";
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private UserService userService;
-
-    //@Autowired
-    private CurrencyService currencyService;
 
     @Autowired
     private SecurityService securityService;
 
     @Autowired
     private UserValidator userValidator;
+
     @Autowired
     private RateValidator rateValidator;
 
+    private CurrencyService currencyService;
+
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(final Model model) {
-        model.addAttribute("userForm", new User());
+        model.addAttribute(USER_FORM, new User());
 
         return "registration";
     }
 
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     public String error(final Model model) {
-        model.addAttribute("currencyForm", new Rate());
+        model.addAttribute(CURRENCY_FORM, new Rate());
 
         return "error";
     }
 
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.POST)
-    public String getConversion(@ModelAttribute("currencyForm") Rate currencyForm, final Model model,
+    public String getConversion(@ModelAttribute(CURRENCY_FORM) Rate currencyForm, final Model model,
                                 final BindingResult bindingResult){
         rateValidator.validate(currencyForm, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -76,14 +82,14 @@ public class UserController {
 
         List<Rate> rates = getRates(objects);
 
-        model.addAttribute("rates", rates);
+        model.addAttribute(RATES, rates);
 
         return "welcome";
 
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public String registration(@ModelAttribute("userForm") User userForm, final BindingResult bindingResult, final Model model) {
+    public String registration(@ModelAttribute(USER_FORM) User userForm, final BindingResult bindingResult, final Model model) {
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -91,7 +97,6 @@ public class UserController {
         }
 
         userService.save(userForm);
-
         securityService.autologin(userForm.getUsername(), userForm.getPasswordConfirm());
 
         return "redirect:/welcome";
@@ -110,22 +115,19 @@ public class UserController {
 
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
     public String welcome(final Model model) {
-        LOGGER.info("welcome");
 
-        if( SecurityContextHolder.getContext().getAuthentication().getName() != null){
+        if( SecurityContextHolder.getContext().getAuthentication().getName() != null) {
 
-            List<Object[]> objects = new ArrayList<>();
-            objects = userService.findTop10byRate(SecurityContextHolder.getContext().getAuthentication().getName());
+            List<Object[]> objects = userService.findTop10byRate(SecurityContextHolder.getContext().getAuthentication().getName());
             List<Rate> rates = getRates(objects);
-            model.addAttribute("rates", rates);
-            model.addAttribute("currencyForm", new Rate());
+            model.addAttribute(RATES, rates);
+            model.addAttribute(CURRENCY_FORM, new Rate());
         }
         return "welcome";
     }
 
      private List<Rate> getRates(final List<Object[]> objects) {
         List<Rate> rates = new ArrayList<>();
-        LOGGER.info("size" + objects.size());
         if( objects.size() > 0 ) {
             for (Object[] item : objects) {
                 Rate rate = new Rate();

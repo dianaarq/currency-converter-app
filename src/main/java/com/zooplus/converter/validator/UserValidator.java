@@ -15,6 +15,15 @@ import java.util.regex.Pattern;
  */
 @Component
 public class UserValidator implements Validator {
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String DATE_OF_BIRTH = "dateOfBirth";
+    public static final String ZIP = "zip";
+    public static final String EMAIL = "email";
+    public static final String CITY = "city";
+    public static final String ADDRESS = "address";
+    public static final String PASSWORD_CONFIRM = "passwordConfirm";
+    public static final String NOT_EMPTY = "NotEmpty";
     @Autowired
     private UserService userService;
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -35,42 +44,42 @@ public class UserValidator implements Validator {
         User user = (User) o;
 
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, USERNAME, NOT_EMPTY);
         if (user.getUsername().length() < 6 || user.getUsername().length() > 32) {
-            errors.rejectValue("username", "Size.userForm.username");
+            errors.rejectValue(USERNAME, "Size.userForm.username");
         }
         if (userService.findByUsername(user.getUsername()) != null) {
-            errors.rejectValue("username", "Duplicate.userForm.username");
+            errors.rejectValue(USERNAME, "Duplicate.userForm.username");
         }
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD, NOT_EMPTY);
         if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
-            errors.rejectValue("password", "Size.userForm.password");
+            errors.rejectValue(PASSWORD, "Size.userForm.password");
         }
 
         if (!user.getPasswordConfirm().equals(user.getPassword())) {
-            errors.rejectValue("passwordConfirm", "Diff.userForm.passwordConfirm");
+            errors.rejectValue(PASSWORD_CONFIRM, "Diff.userForm.passwordConfirm");
         }
 
-        ValidationUtils.rejectIfEmpty(errors, "address", "NotEmpty");
-        ValidationUtils.rejectIfEmpty(errors, "city", "NotEmpty");
+        ValidationUtils.rejectIfEmpty(errors, ADDRESS, NOT_EMPTY);
+        ValidationUtils.rejectIfEmpty(errors, CITY, NOT_EMPTY);
 
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, EMAIL, NOT_EMPTY);
         Matcher matcher = pattern.matcher(user.getEmail());
         if (!matcher.matches()) {
-            errors.rejectValue("email", "Format.userForm.email");
+            errors.rejectValue(EMAIL, "Format.userForm.email");
         }
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "dateOfBirth", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, DATE_OF_BIRTH, NOT_EMPTY);
         matcher = patternDate.matcher(user.getDateOfBirth());
         if (!matcher.matches()) {
-            errors.rejectValue("dateOfBirth", "Format.userForm.dateOfBirth");
+            errors.rejectValue(DATE_OF_BIRTH, "Format.userForm.dateOfBirth");
         }
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "zip", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, ZIP, NOT_EMPTY);
         if (user.getZip().length() < 1 || user.getPassword().length() > 8) {
-            errors.rejectValue("zip", "Size.userForm.zip");
+            errors.rejectValue(ZIP, "Size.userForm.zip");
         }
 
 

@@ -17,20 +17,21 @@ import java.util.regex.Pattern;
 public class RateValidator implements Validator {
 
     private static final String DATE_PATTERN_FORM = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$";
+    public static final String DATE = "date";
     private Pattern patternDateForm =  Pattern.compile(DATE_PATTERN_FORM);
 
     @Override
-    public boolean supports(Class<?> aClass) {
+    public boolean supports(final Class<?> aClass) {
         return Rate.class.equals(aClass);
     }
 
     @Override
     public void validate(final Object o, final Errors errors) {
         Rate rate = (Rate) o;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "date", "NotEmpty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, DATE, "NotEmpty");
         Matcher matcher = patternDateForm.matcher(rate.getDate());
         if (!matcher.matches()) {
-            errors.rejectValue("date", "Format.currencyForm.date");
+            errors.rejectValue(DATE, "Format.currencyForm.date");
         }
     }
 }
