@@ -1,6 +1,7 @@
 package com.zooplus.converter.service;
 
 import com.zooplus.converter.model.CurrencyConverter;
+import com.zooplus.converter.model.FixerConverter;
 import com.zooplus.converter.model.Rate;
 import com.zooplus.converter.model.User;
 import com.zooplus.converter.repository.RateRepository;
@@ -38,9 +39,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveRate(final CurrencyConverter currencyConverter, final User user, final String currency, final String date) {
-        String quote = currencyConverter.getQuotes().get("USD" + currency).toString();
-        rateRepository.save(new Rate(currency, quote, new Timestamp(Long.valueOf(currencyConverter.getTimestamp())), date, user));
+    public void saveRate(final FixerConverter currencyConverter, final User user, final String currency, final String date) {
+        String quote = currencyConverter.getRates().get(currency).toString();
+        String base = currencyConverter.getBase();
+        rateRepository.save(new Rate(currency, base, quote, date, user));
     }
 
     @Override

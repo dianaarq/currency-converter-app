@@ -1,5 +1,6 @@
 package com.zooplus.converter.validator;
 
+import com.zooplus.converter.model.Rate;
 import com.zooplus.converter.model.User;
 import com.zooplus.converter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,14 @@ public class UserValidator implements Validator {
     private static final String DATE_PATTERN = "^(3[01]|[12][0-9]|0[1-9])/(1[0-2]|0[1-9])/[0-9]{4}$";
     private Pattern patternDate =  Pattern.compile(DATE_PATTERN);
 
-
     @Override
     public boolean supports(Class<?> aClass) {
         return User.class.equals(aClass);
     }
 
+
     @Override
-    public void validate(Object o, Errors errors) {
+    public void validate(final Object o, final Errors errors) {
         User user = (User) o;
 
 

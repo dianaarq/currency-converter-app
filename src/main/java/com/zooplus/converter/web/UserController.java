@@ -1,9 +1,10 @@
 package com.zooplus.converter.web;
 
-import com.zooplus.converter.model.CurrencyConverter;
+import com.zooplus.converter.model.FixerConverter;
 import com.zooplus.converter.model.Rate;
 import com.zooplus.converter.model.User;
 import com.zooplus.converter.service.*;
+import com.zooplus.converter.validator.RateValidator;
 import com.zooplus.converter.validator.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -30,7 +30,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
+    //@Autowired
     private CurrencyService currencyService;
 
     @Autowired
@@ -38,6 +38,8 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+    @Autowired
+    private RateValidator rateValidator;
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(final Model model) {
@@ -48,24 +50,28 @@ public class UserController {
 
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     public String error(final Model model) {
-        model.addAttribute("userForm", new User());
+        model.addAttribute("currencyForm", new Rate());
 
         return "error";
     }
 
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.POST)
-    public String getConversion(@ModelAttribute("currencyForm") Rate currencyForm, final Model model){
-
+    public String getConversion(@ModelAttribute("currencyForm") Rate currencyForm, final Model model,
+                                final BindingResult bindingResult){
+        rateValidator.validate(currencyForm, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "/welcome";
+        }
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        LOGGER.info("getConversion");
-        CurrencyConverter currencyConverter =
-                currencyService.getRateByCurrency(currencyForm.getCurrency());
-        LOGGER.info("User name de quotes"+ currencyConverter.getQuotes().toString());
+        currencyService = new CurrencyServiceFixerImp();
+        FixerConverter fixerConverter =
+                currencyService.getRateByCurrency(currencyForm.getBase(), currencyForm.getCurrency(), currencyForm.getDate());
 
         User user = userService.findByUsername(name);
-        LOGGER.info("User name from the user" + user.getUsername());
-
-        userService.saveRate(currencyConverter, user, currencyForm.getCurrency(), currencyForm.getDate());
+        if (bindingResult.hasErrors()) {
+            return "/welcome";
+        }
+        userService.saveRate(fixerConverter, user, currencyForm.getCurrency(), currencyForm.getDate());
         List<Object[]> objects = userService.findTop10byRate(name);
 
         List<Rate> rates = getRates(objects);
@@ -117,33 +123,18 @@ public class UserController {
         return "welcome";
     }
 
-    /*
-*  private Long id;
-    String currency;
-    String exchange;
-    Timestamp timestamp;
-    String date;
-    User user;*/
-    private List<Rate> getRates(final List<Object[]> objects) {
+     private List<Rate> getRates(final List<Object[]> objects) {
         List<Rate> rates = new ArrayList<>();
         LOGGER.info("size" + objects.size());
         if( objects.size() > 0 ) {
             for (Object[] item : objects) {
                 Rate rate = new Rate();
 
-                LOGGER.info("" + item[0]);
                 rate.setId(((BigInteger) item[0]).longValue());
-                LOGGER.info("" + item[1]);
-                rate.setCurrency((String) item[1]);
-                LOGGER.info("" + item[2]);
-                rate.setExchange((String) item[2]);
-
-                LOGGER.info("" + item[3]);
-                rate.setTimestamp((Timestamp) item[3]);
-
-                LOGGER.info("" + item[4]);
+                rate.setBase((String) item[1]);
+                rate.setCurrency((String) item[2]);
+                rate.setExchange((String) item[3]);
                 rate.setDate((String) item[4]);
-
                 rates.add(rate);
             }
 

@@ -43,21 +43,19 @@
             <table>
                 <tr class="tabletitle">
 
-                    <td>Id</td>
+                    <td>Base</td>
                     <td>Currency</td>
                     <td>Change</td>
                     <td>Date</td>
-                    <td>Timestamp</td>
 
                 </tr>
                 <c:forEach var="listValue" items="${rates}">
                     <tr>
 
-                        <td>${listValue.id}</td>
+                        <td>${listValue.base}</td>
                         <td>${listValue.currency}</td>
                         <td>${listValue.exchange}</td>
                         <td>${listValue.date}</td>
-                        <td>${listValue.timestamp}</td>
 
                     </tr>
             </c:forEach>
@@ -74,6 +72,23 @@
 <form:form method="POST" modelAttribute="currencyForm" class="form-signin">
 
        <h2 class="form-heading">Select currency and date</h2>
+    <spring:bind path="base">
+        <div class="form-group ${error != null ? 'has-error' : ''}">
+
+            <span>${message}</span>
+            <form:select type="base" path="base" class="form-control" placeholder="Currency base">
+                <option value="CAD">Canadian Dollar</option>
+                <option value="EUR">Euro</option>
+                <option value="AUD">Australian Dollar</option>
+                <option value="PLN">Zloty</option>
+                <option value="MXN">Mexico Peso</option>
+                <option value="GBP">British Pound</option>
+                <option value="NZD">New Zealand Dollar</option>
+                <option value="JPY">Japanese Yen</option>
+                <option value="HUF">Hungarian Forint</option>
+            </form:select>
+        </div>
+    </spring:bind>
 
     <spring:bind path="currency">
         <div class="form-group ${error != null ? 'has-error' : ''}">
@@ -85,14 +100,17 @@
                 <option value="CAD">Canadian Dollar</option>
                 <option value="PLN">Zloty</option>
                 <option value="MXN">Mexico Peso</option>
-
+                <option value="GBP">British Pound</option>
+                <option value="NZD">New Zealand Dollar</option>
+                <option value="JPY">Japanese Yen</option>
+                <option value="HUF">Hungarian Forint</option>
             </form:select>
         </div>
     </spring:bind>
 
     <spring:bind path="date">
         <div class="form-group ${status.error ? 'has-error' : ''}">
-            <form:input type="text" path="date" class="form-control" placeholder="Date: DD-MM-YYYY"
+            <form:input type="text" path="date" class="form-control" placeholder="Date: YYYY-MM-DD"
                         autofocus="true"></form:input>
             <form:errors path="date"></form:errors>
         </div>

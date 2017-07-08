@@ -10,20 +10,20 @@ import java.sql.Timestamp;
 @Table(name = "rate")
 public class Rate {
     private Long id;
+    private String base;
     private String currency;
     private String exchange;
-    private Timestamp timestamp;
     private String date;
     private User user;
 
     public Rate(){ }
-    public Rate(final String currency, final String exchange, final Timestamp timestamp, final String date, final User user){
+    public Rate(final String currency, final String base, final String exchange, final String date, final User user){
         super();
         this.currency = currency;
         this.exchange = exchange;
         this.user = user;
         this.date = date;
-        this.timestamp = timestamp;
+        this.base = base;
     }
     @ManyToOne
     @JoinColumn(name = "user")
@@ -45,6 +45,14 @@ public class Rate {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getBase() {
+        return base;
+    }
+
+    public void setBase(String base) {
+        this.base = base;
     }
 
     public String getCurrency() {
@@ -70,14 +78,5 @@ public class Rate {
     public void setDate(String date) {
         this.date = date;
     }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-
 
 }
