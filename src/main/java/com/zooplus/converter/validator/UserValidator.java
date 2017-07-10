@@ -24,14 +24,20 @@ public class UserValidator implements Validator {
     public static final String ADDRESS = "address";
     public static final String PASSWORD_CONFIRM = "passwordConfirm";
     public static final String NOT_EMPTY = "NotEmpty";
-    @Autowired
-    private UserService userService;
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private Pattern pattern =  Pattern.compile(EMAIL_PATTERN);
 
     private static final String DATE_PATTERN = "^(3[01]|[12][0-9]|0[1-9])/(1[0-2]|0[1-9])/[0-9]{4}$";
     private Pattern patternDate =  Pattern.compile(DATE_PATTERN);
+
+    private final UserService userService;
+
+    @Autowired
+    public UserValidator(final UserService userService) {
+        this.userService = userService;
+    }
+
 
     @Override
     public boolean supports(Class<?> aClass) {

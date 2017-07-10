@@ -4,13 +4,11 @@ import com.zooplus.converter.model.FixerConverter;
 import com.zooplus.converter.model.Rate;
 import com.zooplus.converter.model.User;
 import com.zooplus.converter.service.CurrencyService;
-import com.zooplus.converter.service.CurrencyServiceFixerImp;
+import com.zooplus.converter.service.CurrencyServiceImp;
 import com.zooplus.converter.service.SecurityService;
 import com.zooplus.converter.service.UserService;
 import com.zooplus.converter.validator.RateValidator;
 import com.zooplus.converter.validator.UserValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -31,21 +29,33 @@ public class UserController {
     public static final String CURRENCY_FORM = "currencyForm";
     public static final String USER_FORM = "userForm";
     public static final String RATES = "rates";
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private UserValidator userValidator;
-
-    @Autowired
-    private RateValidator rateValidator;
-
+    private final UserService userService;
+    private final SecurityService securityService;
+    private final UserValidator userValidator;
+    private final RateValidator rateValidator;
     private CurrencyService currencyService;
+
+    @Autowired
+    public UserController(final UserService userService, final SecurityService securityService,
+                          final UserValidator userValidator, final RateValidator rateValidator)
+                           {
+        this.userService = userService;
+        this.securityService = securityService;
+        this.userValidator = userValidator;
+        this.rateValidator = rateValidator;
+    }
+
+    public UserController(final UserService userService, final SecurityService securityService,
+                          final UserValidator userValidator, final RateValidator rateValidator,
+                          final CurrencyService currencyService)
+    {
+        this.userService = userService;
+        this.securityService = securityService;
+        this.userValidator = userValidator;
+        this.rateValidator = rateValidator;
+        this.currencyService = currencyService;
+    }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(final Model model) {
@@ -54,7 +64,7 @@ public class UserController {
         return "registration";
     }
 
-    @RequestMapping(value = "/error", method = RequestMethod.GET)
+    @RequestMapping(value = "/error")
     public String error(final Model model) {
         model.addAttribute(CURRENCY_FORM, new Rate());
 
@@ -69,14 +79,13 @@ public class UserController {
             return "/welcome";
         }
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        currencyService = new CurrencyServiceFixerImp();
-        FixerConverter fixerConverter =
-                currencyService.getRateByCurrency(currencyForm.getBase(), currencyForm.getCurrency(), currencyForm.getDate());
+
+        FixerConverter fixerConverter;
+        currencyService = new CurrencyServiceImp();
+        fixerConverter = currencyService.getRateByCurrency(currencyForm.getBase(), currencyForm.getCurrency(), currencyForm.getDate());
 
         User user = userService.findByUsername(name);
-        if (bindingResult.hasErrors()) {
-            return "/welcome";
-        }
+
         userService.saveRate(fixerConverter, user, currencyForm.getCurrency(), currencyForm.getDate());
         List<Object[]> objects = userService.findTop10byRate(name);
 

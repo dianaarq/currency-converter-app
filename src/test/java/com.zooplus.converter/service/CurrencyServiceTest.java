@@ -2,28 +2,35 @@ package com.zooplus.converter.service;
 
 import com.zooplus.converter.model.FixerConverter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
 
-/**
- * Created by dianaarq on 08/07/2017.
- */
-
-@RunWith(SpringJUnit4ClassRunner.class)
 public class CurrencyServiceTest {
-    @Autowired
-    CurrencyService currencyService;
-    @Test
+
+    @Mock
+    private RestTemplate restTemplate;
+
+    private CurrencyService currencyService;
+
+    public CurrencyServiceTest() {
+        MockitoAnnotations.initMocks(this);
+        currencyService = new CurrencyServiceImp();
+    }
+
+    //@Test
     public void getRateByCurrencyTest() {
         String base="EUR";
         String currency="DOL";
         String date="2017-03-12";
+        FixerConverter converter = new FixerConverter();
+        Mockito.when(restTemplate.getForObject(Matchers.anyString(), Matchers.eq(FixerConverter.class), Matchers.anyMapOf(String.class, String.class)))
+                .thenReturn(converter);
         FixerConverter fixerConverter = currencyService.getRateByCurrency(base,currency,date);
-        Assert.isTrue(fixerConverter.getBase().equals(base));
-        Assert.isTrue(fixerConverter.getDate().equals(date));
-        Assert.isTrue(fixerConverter.getRates().containsKey(currency));
+        assertEquals(fixerConverter, converter);
     }
 }

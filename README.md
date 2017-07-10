@@ -1,19 +1,11 @@
-# Registration and Login Example with Spring Security, Spring Boot, Spring Data JPA, HSQL, JSP
+# Registration and Login currency conversor
 
 ## Guide
 Currency conversor
 
-## Prerequisites
-- JDK 1.7 or later
-- Maven 3 or later
+It contains travis configuration 
 
-## Stack
-- Spring Security
-- Spring Boot
-- Spring Data JPA
-- Maven
-- JSP
-- HSQL
+It can be found: https://quiet-caverns-50748.herokuapp.com/login
 
 ## Run
 ```mvn clean spring-boot:run```

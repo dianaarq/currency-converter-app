@@ -1,19 +1,15 @@
 package com.zooplus.converter.service;
 
-import com.zooplus.converter.model.CurrencyConverter;
 import com.zooplus.converter.model.FixerConverter;
 import com.zooplus.converter.model.Rate;
 import com.zooplus.converter.model.User;
 import com.zooplus.converter.repository.RateRepository;
 import com.zooplus.converter.repository.RoleRepository;
 import com.zooplus.converter.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 /**
@@ -21,15 +17,20 @@ import java.util.List;
  */
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private RateRepository rateRepository;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RateRepository rateRepository;
 
+
+    @Autowired
+    public UserServiceImpl(final UserRepository userRepository, final RoleRepository roleRepository,
+                           final BCryptPasswordEncoder bCryptPasswordEncoder, final RateRepository rateRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.rateRepository = rateRepository;
+    }
 
     @Override
     public void save(final User user) {
@@ -42,7 +43,8 @@ public class UserServiceImpl implements UserService {
     public void saveRate(final FixerConverter currencyConverter, final User user, final String currency, final String date) {
         String quote = currencyConverter.getRates().get(currency).toString();
         String base = currencyConverter.getBase();
-        rateRepository.save(new Rate(currency, base, quote, date, user));
+        Rate rate = new Rate(currency, base, quote, date, user);
+        rateRepository.save(rate);
     }
 
     @Override

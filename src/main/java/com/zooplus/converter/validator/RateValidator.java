@@ -33,5 +33,8 @@ public class RateValidator implements Validator {
         if (!matcher.matches()) {
             errors.rejectValue(DATE, "Format.currencyForm.date");
         }
+        if( rate.getBase().equals(rate.getCurrency())){
+            errors.rejectValue("currency", "Format.currencyForm.currency");
+        }
     }
 }
